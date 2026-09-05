@@ -7,7 +7,13 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="min-h-screen bg-[#f5f7f4]">
-      <header class="border-b border-emerald-950/10 bg-[#f5f7f4]/95 backdrop-blur">
+      <a
+        class="absolute left-4 top-4 z-50 -translate-y-20 rounded-full bg-emerald-950 px-4 py-2 text-sm font-semibold text-white transition focus:translate-y-0"
+        href="#main-content"
+      >
+        Skip to content
+      </a>
+      <header class="relative border-b border-emerald-950/10 bg-[#f5f7f4]/95 backdrop-blur">
         <nav
           class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8"
           aria-label="Main navigation"
@@ -30,7 +36,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
           </button>
           <div
             id="main-menu"
-            class="absolute inset-x-0 top-[73px] z-20 border-b border-emerald-950/10 bg-[#f5f7f4] px-5 py-4 lg:static lg:flex lg:items-center lg:gap-8 lg:border-0 lg:bg-transparent lg:p-0"
+            class="absolute inset-x-0 top-full z-20 border-b border-emerald-950/10 bg-[#f5f7f4] px-5 py-4 lg:static lg:flex lg:items-center lg:gap-8 lg:border-0 lg:bg-transparent lg:p-0"
             [class.hidden]="!menuOpen()"
           >
             <a
@@ -57,11 +63,13 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
           </div>
         </nav>
       </header>
-      <main>
+      <main id="main-content" tabindex="-1">
         <ng-content />
       </main>
-      <footer class="mx-auto max-w-7xl px-5 py-8 text-sm text-emerald-950/55 lg:px-8">
-        Kita is taking shape. More soon.
+      <footer class="border-t border-emerald-950/10">
+        <div class="mx-auto max-w-7xl px-5 py-8 text-sm text-emerald-950/55 lg:px-8">
+          Kita is taking shape. More soon.
+        </div>
       </footer>
     </div>
   `,
