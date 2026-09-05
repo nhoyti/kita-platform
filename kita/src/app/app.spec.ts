@@ -27,6 +27,10 @@ describe('App', () => {
     expect(compiled.querySelector('a[href="#main-content"]')?.textContent).toContain(
       'Skip to content',
     );
+    expect(compiled.querySelector('a[href="/auth/login"]')?.textContent).toContain('Log in');
+    expect(compiled.querySelector('a[href="/auth/register"]')?.textContent).toContain(
+      'Create an account',
+    );
   });
 
   it('opens and closes the mobile menu with the toggle and Escape', async () => {

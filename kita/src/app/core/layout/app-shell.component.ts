@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
+import { AuthService } from '../auth/auth.service';
 import { ErrorStateService } from '../errors/error-state.service';
 
 @Component({
@@ -61,12 +62,43 @@ import { ErrorStateService } from '../errors/error-state.service';
               (click)="closeMenu()"
               >About</a
             >
-            <a
-              class="mt-2 inline-flex min-h-11 items-center justify-center rounded-full bg-emerald-900 px-5 text-sm font-semibold text-white hover:bg-emerald-800 lg:mt-0"
-              routerLink="/get-started"
-              (click)="closeMenu()"
-              >Get started</a
-            >
+            @if (!auth.ready()) {
+              <span class="mt-2 px-3 py-3 text-sm text-emerald-950/50 lg:mt-0 lg:py-2">
+                Checking your session...
+              </span>
+            } @else if (auth.isAuthenticated()) {
+              <a
+                class="mt-2 inline-flex min-h-11 items-center justify-center rounded-full border border-emerald-900/20 px-5 text-sm font-semibold text-emerald-950 hover:bg-emerald-900/5 lg:mt-0"
+                routerLink="/account"
+                (click)="closeMenu()"
+                >Your account</a
+              >
+              <button
+                class="mt-2 inline-flex min-h-11 items-center justify-center rounded-full bg-emerald-900 px-5 text-sm font-semibold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60 lg:mt-0"
+                type="button"
+                [disabled]="logoutLoading()"
+                (click)="logout()"
+              >
+                @if (logoutLoading()) {
+                  Signing out...
+                } @else {
+                  Sign out
+                }
+              </button>
+            } @else {
+              <a
+                class="mt-2 inline-flex min-h-11 items-center justify-center rounded-full border border-emerald-900/20 px-5 text-sm font-semibold text-emerald-950 hover:bg-emerald-900/5 lg:mt-0"
+                routerLink="/auth/login"
+                (click)="closeMenu()"
+                >Log in</a
+              >
+              <a
+                class="mt-2 inline-flex min-h-11 items-center justify-center rounded-full bg-emerald-900 px-5 text-sm font-semibold text-white hover:bg-emerald-800 lg:mt-0"
+                routerLink="/auth/register"
+                (click)="closeMenu()"
+                >Create an account</a
+              >
+            }
           </div>
         </nav>
       </header>
@@ -99,10 +131,27 @@ import { ErrorStateService } from '../errors/error-state.service';
   `,
 })
 export class AppShellComponent {
+  protected readonly auth = inject(AuthService);
   protected readonly errorState = inject(ErrorStateService);
+  private readonly router = inject(Router);
+  protected readonly logoutLoading = signal(false);
   protected readonly menuOpen = signal(false);
 
   protected closeMenu(): void {
     this.menuOpen.set(false);
+  }
+
+  protected async logout(): Promise<void> {
+    this.logoutLoading.set(true);
+
+    try {
+      await this.auth.logout();
+      this.closeMenu();
+      await this.router.navigateByUrl('/');
+    } catch (error) {
+      this.errorState.show(error instanceof Error ? error.message : undefined);
+    } finally {
+      this.logoutLoading.set(false);
+    }
   }
 }
