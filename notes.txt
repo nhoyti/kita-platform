@@ -1,0 +1,43 @@
+Implement the Content vertical slice.
+
+Requirements:
+
+Creator can:
+
+- create text post
+- upload image
+- upload video
+- edit post
+- delete post
+- save draft
+- publish post
+
+Post visibility:
+
+- public
+- followers
+- subscribers
+- tier
+- paid
+
+Create:
+
+posts
+post_media
+post_access
+
+Implement appropriate RLS.
+
+Private media must not be publicly accessible.
+
+Use Supabase Storage for initial image storage.
+
+For video, design the abstraction so a dedicated video provider can be added later.
+
+Do not expose permanent private media URLs.
+
+Implement the Angular UI and backend integration.
+
+Include loading, error and empty states.
+
+Run the build after implementation.

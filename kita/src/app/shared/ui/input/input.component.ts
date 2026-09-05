@@ -1,7 +1,22 @@
-import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  forwardRef,
+  input,
+  model,
+  signal,
+} from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-input',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => InputComponent),
+      multi: true,
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <label class="grid gap-2 text-sm font-semibold text-emerald-950" [for]="id()">
@@ -16,7 +31,7 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
         [type]="type()"
         [value]="value()"
         [required]="required()"
-        [disabled]="disabled()"
+        [disabled]="disabled() || disabledState()"
         [attr.aria-describedby]="error() ? id() + '-error' : null"
         [attr.aria-invalid]="error() ? 'true' : 'false'"
         (input)="onInput($event)"
@@ -27,7 +42,7 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
     </label>
   `,
 })
-export class InputComponent {
+export class InputComponent implements ControlValueAccessor {
   readonly id = input.required<string>();
   readonly label = input.required<string>();
   readonly type = input('text');
@@ -36,8 +51,30 @@ export class InputComponent {
   readonly disabled = input(false);
   readonly error = input('');
   readonly value = model('');
+  protected readonly disabledState = signal(false);
+  private onChange: (value: string) => void = () => undefined;
+  private onTouched: () => void = () => undefined;
 
   protected onInput(event: Event): void {
-    this.value.set((event.target as HTMLInputElement).value);
+    const value = (event.target as HTMLInputElement).value;
+    this.value.set(value);
+    this.onChange(value);
+    this.onTouched();
+  }
+
+  writeValue(value: string | null): void {
+    this.value.set(value ?? '');
+  }
+
+  registerOnChange(onChange: (value: string) => void): void {
+    this.onChange = onChange;
+  }
+
+  registerOnTouched(onTouched: () => void): void {
+    this.onTouched = onTouched;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabledState.set(isDisabled);
   }
 }

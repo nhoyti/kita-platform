@@ -5,6 +5,8 @@ import { NotFoundPageComponent } from './features/not-found/not-found-page.compo
 import { PlaceholderPageComponent } from './features/placeholder/placeholder-page.component';
 import { AuthPageComponent } from './features/auth/auth-page.component';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
+import { CreatorDashboardPageComponent } from './features/creator/creator-dashboard-page.component';
+import { PublicCreatorPageComponent } from './features/creator/public-creator-page.component';
 
 export const routes: Routes = [
   { path: '', component: HomePageComponent, title: 'Kita | Discover' },
@@ -60,6 +62,17 @@ export const routes: Routes = [
     canActivate: [authGuard],
     title: 'Your account | Kita',
     data: { title: 'Your account' },
+  },
+  {
+    path: 'creator/dashboard',
+    component: CreatorDashboardPageComponent,
+    canActivate: [authGuard],
+    title: 'Creator studio | Kita',
+  },
+  {
+    path: 'creators/:username',
+    component: PublicCreatorPageComponent,
+    title: 'Creator | Kita',
   },
   { path: 'not-found', component: NotFoundPageComponent, title: 'Page not found | Kita' },
   { path: '**', redirectTo: 'not-found' },
