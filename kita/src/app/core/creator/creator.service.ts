@@ -112,6 +112,40 @@ export class CreatorService {
     return data;
   }
 
+  async updateCurrentPlan(id: string, input: CreatorPlanInput): Promise<CreatorPlan> {
+    const creatorId = this.requireUserId('update subscription plan');
+    const { data, error } = await this.getClient('update subscription plan')
+      .from('creator_plans')
+      .update({ ...input, creator_id: creatorId })
+      .eq('id', id)
+      .eq('creator_id', creatorId)
+      .select(PLAN_COLUMNS)
+      .single<CreatorPlan>();
+
+    if (error) {
+      throw this.toError(error, 'update subscription plan');
+    }
+
+    return data;
+  }
+
+  async deactivateCurrentPlan(id: string): Promise<CreatorPlan> {
+    const creatorId = this.requireUserId('deactivate subscription plan');
+    const { data, error } = await this.getClient('deactivate subscription plan')
+      .from('creator_plans')
+      .update({ is_active: false })
+      .eq('id', id)
+      .eq('creator_id', creatorId)
+      .select(PLAN_COLUMNS)
+      .single<CreatorPlan>();
+
+    if (error) {
+      throw this.toError(error, 'deactivate subscription plan');
+    }
+
+    return data;
+  }
+
   async getPublicPosts(creatorId: string): Promise<CreatorPost[]> {
     const { data, error } = await this.getClient('load creator posts')
       .from('creator_posts')

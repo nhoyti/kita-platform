@@ -145,10 +145,18 @@ import { ContentStudioComponent } from './content-studio.component';
                     id="plan-description"
                     class="min-h-20 rounded-xl border border-emerald-950/15 p-3 font-normal"
                     formControlName="description"
-                  ></textarea></label
-                ><app-button type="submit" variant="secondary" [loading]="planSaving()"
-                  >Add plan</app-button
-                >
+                  ></textarea>
+                </label>
+                <div class="flex flex-wrap gap-3">
+                  <app-button type="submit" variant="secondary" [loading]="planSaving()">{{
+                    editingPlanId() ? 'Update plan' : 'Add plan'
+                  }}</app-button>
+                  @if (editingPlanId()) {
+                    <app-button type="button" variant="quiet" (click)="cancelPlanEdit()"
+                      >Cancel</app-button
+                    >
+                  }
+                </div>
               </form>
               <div class="mt-6 grid gap-3">
                 @for (plan of plans(); track plan.id) {
@@ -158,6 +166,26 @@ import { ContentStudioComponent } from './content-studio.component';
                       ><span>PHP {{ plan.monthly_price }}</span>
                     </div>
                     <p class="mt-1 text-sm text-emerald-950/55">{{ plan.description }}</p>
+                    <div class="mt-3 flex gap-3 text-sm font-semibold">
+                      <button
+                        type="button"
+                        class="text-emerald-900 underline"
+                        (click)="editPlan(plan)"
+                      >
+                        Edit
+                      </button>
+                      @if (plan.is_active) {
+                        <button
+                          type="button"
+                          class="text-red-700 underline"
+                          (click)="deactivatePlan(plan)"
+                        >
+                          Deactivate
+                        </button>
+                      } @else {
+                        <span class="text-emerald-950/45">Inactive</span>
+                      }
+                    </div>
                   </div>
                 } @empty {
                   <p class="text-sm text-emerald-950/55">No plans yet.</p>
@@ -179,6 +207,7 @@ export class CreatorDashboardPageComponent {
   protected readonly loading = signal(true);
   protected readonly saving = signal(false);
   protected readonly planSaving = signal(false);
+  protected readonly editingPlanId = signal<string | null>(null);
   protected readonly errorMessage = signal('');
   protected readonly message = signal('');
   protected readonly profile = signal<CreatorProfile | null>(null);
@@ -248,17 +277,53 @@ export class CreatorDashboardPageComponent {
     this.planSaving.set(true);
     try {
       const values = this.planForm.getRawValue();
-      const plan = await this.creatorService.saveCurrentPlan({
+      const input = {
         name: values.name,
         description: values.description,
         monthly_price: values.monthlyPrice,
-      });
-      this.plans.update((plans) => [...plans, plan]);
+      };
+      const plan = this.editingPlanId()
+        ? await this.creatorService.updateCurrentPlan(this.editingPlanId()!, input)
+        : await this.creatorService.saveCurrentPlan(input);
+      this.plans.update((plans) =>
+        this.editingPlanId()
+          ? plans.map((item) => (item.id === plan.id ? plan : item))
+          : [...plans, plan],
+      );
+      this.editingPlanId.set(null);
       this.planForm.reset({ name: '', description: '', monthlyPrice: 0 });
     } catch (error) {
       this.errorMessage.set(error instanceof Error ? error.message : 'Plan could not be saved.');
     } finally {
       this.planSaving.set(false);
+    }
+  }
+
+  protected editPlan(plan: CreatorPlan): void {
+    this.editingPlanId.set(plan.id);
+    this.planForm.setValue({
+      name: plan.name,
+      description: plan.description ?? '',
+      monthlyPrice: plan.monthly_price,
+    });
+  }
+
+  protected cancelPlanEdit(): void {
+    this.editingPlanId.set(null);
+    this.planForm.reset({ name: '', description: '', monthlyPrice: 0 });
+  }
+
+  protected async deactivatePlan(plan: CreatorPlan): Promise<void> {
+    this.errorMessage.set('');
+    try {
+      const updatedPlan = await this.creatorService.deactivateCurrentPlan(plan.id);
+      this.plans.update((plans) =>
+        plans.map((item) => (item.id === updatedPlan.id ? updatedPlan : item)),
+      );
+    } catch (error) {
+      this.errorMessage.set(
+        error instanceof Error ? error.message : 'Plan could not be deactivated.',
+      );
     }
   }
 

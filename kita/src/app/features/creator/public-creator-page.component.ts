@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { CreatorService } from '../../core/creator/creator.service';
 import { CreatorPlan, CreatorPost, CreatorProfile } from '../../core/creator/creator.types';
+import { SubscriptionService } from '../../core/subscription/subscription.service';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
 import { CardComponent } from '../../shared/ui/card/card.component';
 import { LoadingComponent } from '../../shared/ui/loading/loading.component';
@@ -88,8 +89,24 @@ import { LoadingComponent } from '../../shared/ui/loading/loading.component';
                 <p
                   class="mt-4 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-950/40"
                 >
-                  Payments coming later
+                  Mock payment provider
                 </p>
+                @if (auth.isAuthenticated()) {
+                  <app-button
+                    class="mt-4"
+                    variant="secondary"
+                    [loading]="subscribingPlanId() === plan.id"
+                    [disabled]="subscribedPlanIds().has(plan.id)"
+                    (click)="subscribe(plan)"
+                    >{{ subscribedPlanIds().has(plan.id) ? 'Subscribed' : 'Subscribe' }}</app-button
+                  >
+                } @else {
+                  <a
+                    class="mt-4 inline-block font-semibold text-emerald-900 underline"
+                    routerLink="/auth/login"
+                    >Sign in to subscribe</a
+                  >
+                }
               </app-card>
             } @empty {
               <p class="text-emerald-950/60">No plans are available yet.</p>
@@ -126,6 +143,7 @@ import { LoadingComponent } from '../../shared/ui/loading/loading.component';
 export class PublicCreatorPageComponent {
   protected readonly auth = inject(AuthService);
   private readonly creatorService = inject(CreatorService);
+  private readonly subscriptionService = inject(SubscriptionService);
   private readonly route = inject(ActivatedRoute);
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
@@ -134,6 +152,8 @@ export class PublicCreatorPageComponent {
   protected readonly posts = signal<CreatorPost[]>([]);
   protected readonly following = signal(false);
   protected readonly followLoading = signal(false);
+  protected readonly subscribingPlanId = signal<string | null>(null);
+  protected readonly subscribedPlanIds = signal<ReadonlySet<string>>(new Set());
 
   constructor() {
     void this.load();
@@ -159,6 +179,24 @@ export class PublicCreatorPageComponent {
       );
     } finally {
       this.followLoading.set(false);
+    }
+  }
+
+  protected async subscribe(plan: CreatorPlan): Promise<void> {
+    if (!this.auth.isAuthenticated()) return;
+    this.subscribingPlanId.set(plan.id);
+    this.errorMessage.set('');
+    try {
+      const subscription = await this.subscriptionService.subscribe(plan.id);
+      if (subscription.status === 'active') {
+        this.subscribedPlanIds.update((ids) => new Set(ids).add(plan.id));
+      }
+    } catch (error) {
+      this.errorMessage.set(
+        error instanceof Error ? error.message : 'Subscription could not be started.',
+      );
+    } finally {
+      this.subscribingPlanId.set(null);
     }
   }
 

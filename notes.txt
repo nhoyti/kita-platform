@@ -1,43 +1,37 @@
-Implement the Content vertical slice.
+Implement the Subscription vertical slice.
 
 Requirements:
 
-Creator can:
+Creator:
+- create subscription plan
+- update plan
+- deactivate plan
 
-- create text post
-- upload image
-- upload video
-- edit post
-- delete post
-- save draft
-- publish post
+Fan:
+- view plans
+- subscribe
+- view subscription
+- cancel subscription
 
-Post visibility:
+Database:
 
-- public
-- followers
-- subscribers
-- tier
-- paid
+creator_plans
+subscriptions
 
-Create:
+Implement:
 
-posts
-post_media
-post_access
+- constraints
+- indexes
+- RLS
+- authorization
+- subscription status
 
-Implement appropriate RLS.
+IMPORTANT:
 
-Private media must not be publicly accessible.
+Do not implement real payment processing yet.
 
-Use Supabase Storage for initial image storage.
+First implement the complete subscription domain and access-control logic using a mock payment provider.
 
-For video, design the abstraction so a dedicated video provider can be added later.
+Create a PaymentProvider interface so the real payment provider can be added later.
 
-Do not expose permanent private media URLs.
-
-Implement the Angular UI and backend integration.
-
-Include loading, error and empty states.
-
-Run the build after implementation.
+The frontend must never determine whether a payment succeeded.

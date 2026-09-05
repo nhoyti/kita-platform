@@ -10,3 +10,8 @@ export { ProfileService } from './profile/profile.service';
 export { ProfileServiceError } from './profile/profile.types';
 export type { AccountStatus, AppRole, Profile, ProfileUpdateInput } from './profile/profile.types';
 export { authGuard, guestGuard } from './guards/auth.guard';
+export { SubscriptionService } from './subscription/subscription.service';
+export { MockPaymentProvider } from './subscription/payment-provider';
+export type { PaymentProvider } from './subscription/payment-provider';
+export type { Subscription, SubscriptionStatus } from './subscription/subscription.types';
+export { SubscriptionServiceError } from './subscription/subscription.types';
