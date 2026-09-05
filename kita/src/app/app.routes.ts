@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { HomePageComponent } from './features/home/home-page.component';
 import { NotFoundPageComponent } from './features/not-found/not-found-page.component';
 import { PlaceholderPageComponent } from './features/placeholder/placeholder-page.component';
+import { AuthPageComponent } from './features/auth/auth-page.component';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -21,37 +22,37 @@ export const routes: Routes = [
   },
   {
     path: 'auth/login',
-    component: PlaceholderPageComponent,
+    component: AuthPageComponent,
     canActivate: [guestGuard],
     title: 'Log in | Kita',
-    data: { title: 'Log in' },
+    data: { mode: 'login' },
   },
   {
     path: 'auth/register',
-    component: PlaceholderPageComponent,
+    component: AuthPageComponent,
     canActivate: [guestGuard],
     title: 'Create an account | Kita',
-    data: { title: 'Create an account' },
+    data: { mode: 'register' },
   },
   {
     path: 'auth/forgot-password',
-    component: PlaceholderPageComponent,
+    component: AuthPageComponent,
     canActivate: [guestGuard],
     title: 'Reset your password | Kita',
-    data: { title: 'Reset your password' },
+    data: { mode: 'forgot-password' },
   },
   {
     path: 'auth/reset-password',
-    component: PlaceholderPageComponent,
+    component: AuthPageComponent,
     canActivate: [authGuard],
     title: 'Choose a new password | Kita',
-    data: { title: 'Choose a new password' },
+    data: { mode: 'reset-password' },
   },
   {
     path: 'auth/verify-email',
-    component: PlaceholderPageComponent,
+    component: AuthPageComponent,
     title: 'Verify your email | Kita',
-    data: { title: 'Verify your email' },
+    data: { mode: 'verify-email' },
   },
   {
     path: 'account',
