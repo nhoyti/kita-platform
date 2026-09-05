@@ -9,3 +9,4 @@ export type { AuthSessionState, RegistrationResult, RegistrationType } from './a
 export { ProfileService } from './profile/profile.service';
 export { ProfileServiceError } from './profile/profile.types';
 export type { AccountStatus, AppRole, Profile, ProfileUpdateInput } from './profile/profile.types';
+export { authGuard, guestGuard } from './guards/auth.guard';

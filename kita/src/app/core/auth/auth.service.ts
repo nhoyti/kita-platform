@@ -9,6 +9,8 @@ export class AuthService {
   private readonly supabase = inject(SupabaseService);
   private readonly sessionState = signal<Session | null>(null);
   private readonly readyState = signal(false);
+  private readonly readyPromise: Promise<void>;
+  private resolveReady!: () => void;
 
   readonly session = this.sessionState.asReadonly();
   readonly user = computed<User | null>(() => this.sessionState()?.user ?? null);
@@ -16,19 +18,26 @@ export class AuthService {
   readonly ready = this.readyState.asReadonly();
 
   constructor() {
+    this.readyPromise = new Promise<void>((resolve) => {
+      this.resolveReady = resolve;
+    });
     const client = this.supabase.client;
 
     if (!client) {
-      this.readyState.set(true);
+      this.markReady();
       return;
     }
 
     client.auth.onAuthStateChange((_event, session) => {
       this.sessionState.set(session);
-      this.readyState.set(true);
+      this.markReady();
     });
 
     void this.restoreSession(client);
+  }
+
+  waitUntilReady(): Promise<void> {
+    return this.readyPromise;
   }
 
   async register(
@@ -138,7 +147,16 @@ export class AuthService {
       this.sessionState.set(data.session);
     }
 
+    this.markReady();
+  }
+
+  private markReady(): void {
+    if (this.readyState()) {
+      return;
+    }
+
     this.readyState.set(true);
+    this.resolveReady();
   }
 
   private getClient(operation: string): SupabaseClient {
