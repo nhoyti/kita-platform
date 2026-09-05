@@ -3,3 +3,6 @@ export { ErrorStateService } from './errors/error-state.service';
 export { AppShellComponent } from './layout/app-shell.component';
 export { isValidSupabaseUrl } from './config/supabase-config';
 export { SupabaseService } from './config/supabase.service';
+export { AuthService } from './auth/auth.service';
+export { AuthServiceError } from './auth/auth.types';
+export type { AuthSessionState, RegistrationResult, RegistrationType } from './auth/auth.types';
