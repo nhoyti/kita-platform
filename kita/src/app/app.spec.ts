@@ -28,4 +28,22 @@ describe('App', () => {
       'Skip to content',
     );
   });
+
+  it('opens and closes the mobile menu with the toggle and Escape', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const toggle = compiled.querySelector('button[aria-controls="main-menu"]') as HTMLButtonElement;
+    const menu = compiled.querySelector('#main-menu') as HTMLElement;
+
+    toggle.click();
+    fixture.detectChanges();
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(menu.classList.contains('hidden')).toBe(false);
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    fixture.detectChanges();
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(menu.classList.contains('hidden')).toBe(true);
+  });
 });

@@ -6,6 +6,9 @@ import { ErrorStateService } from '../errors/error-state.service';
 @Component({
   selector: 'app-shell',
   imports: [RouterLink, RouterLinkActive],
+  host: {
+    '(document:keydown.escape)': 'closeMenu()',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="min-h-screen bg-[#f5f7f4]">
@@ -45,6 +48,7 @@ import { ErrorStateService } from '../errors/error-state.service';
               class="block py-3 text-sm font-semibold text-emerald-950/70 hover:text-emerald-950 lg:py-2"
               routerLink="/"
               routerLinkActive="text-emerald-950"
+              ariaCurrentWhenActive="page"
               [routerLinkActiveOptions]="{ exact: true }"
               (click)="closeMenu()"
               >Discover</a
@@ -53,6 +57,7 @@ import { ErrorStateService } from '../errors/error-state.service';
               class="block py-3 text-sm font-semibold text-emerald-950/70 hover:text-emerald-950 lg:py-2"
               routerLink="/about"
               routerLinkActive="text-emerald-950"
+              ariaCurrentWhenActive="page"
               (click)="closeMenu()"
               >About</a
             >
