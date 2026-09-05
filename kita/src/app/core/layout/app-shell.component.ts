@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+
+import { ErrorStateService } from '../errors/error-state.service';
 
 @Component({
   selector: 'app-shell',
@@ -63,6 +65,23 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
           </div>
         </nav>
       </header>
+      @if (errorState.message(); as message) {
+        <div
+          class="border-b border-red-900/15 bg-red-50 px-5 py-3 text-sm text-red-900"
+          role="alert"
+        >
+          <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 lg:px-3">
+            <span>{{ message }}</span>
+            <button
+              class="font-semibold underline underline-offset-4"
+              type="button"
+              (click)="errorState.clear()"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      }
       <main id="main-content" tabindex="-1">
         <ng-content />
       </main>
@@ -75,6 +94,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   `,
 })
 export class AppShellComponent {
+  protected readonly errorState = inject(ErrorStateService);
   protected readonly menuOpen = signal(false);
 
   protected closeMenu(): void {
