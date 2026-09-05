@@ -8,5 +8,6 @@ describe('SupabaseService', () => {
 
     expect(service.client).toBeNull();
     expect(service.isConfigured).toBe(false);
+    expect(service.configurationError).toBe('Supabase public configuration is missing.');
   });
 });
