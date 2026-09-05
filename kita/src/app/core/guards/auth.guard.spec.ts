@@ -55,8 +55,8 @@ describe('auth guards', () => {
     auth = { ...auth, isAuthenticated: () => true };
     TestBed.overrideProvider(AuthService, { useValue: auth });
 
-      const result = await TestBed.runInInjectionContext(() =>
-        guestGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
+    const result = await TestBed.runInInjectionContext(() =>
+      guestGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
     );
 
     expect(result).toEqual({ commands: ['/account'] });
@@ -64,7 +64,7 @@ describe('auth guards', () => {
 
   it('allows unauthenticated users into guest routes', async () => {
     const result = await TestBed.runInInjectionContext(() =>
-        guestGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
+      guestGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
     );
 
     expect(result).toBe(true);
