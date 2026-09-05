@@ -6,3 +6,6 @@ export { SupabaseService } from './config/supabase.service';
 export { AuthService } from './auth/auth.service';
 export { AuthServiceError } from './auth/auth.types';
 export type { AuthSessionState, RegistrationResult, RegistrationType } from './auth/auth.types';
+export { ProfileService } from './profile/profile.service';
+export { ProfileServiceError } from './profile/profile.types';
+export type { AccountStatus, AppRole, Profile, ProfileUpdateInput } from './profile/profile.types';
