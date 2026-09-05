@@ -19,6 +19,10 @@ describe('AuthService', () => {
     expect(service.isAuthenticated()).toBe(false);
   });
 
+  it('resolves the readiness promise after session initialization', async () => {
+    await expect(service.waitUntilReady()).resolves.toBeUndefined();
+  });
+
   it('fails auth operations without exposing a client-side secret fallback', async () => {
     await expect(service.logout()).rejects.toBeInstanceOf(AuthServiceError);
     await expect(service.logout()).rejects.toMatchObject({
