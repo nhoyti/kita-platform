@@ -2,6 +2,9 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 
 @Component({
   selector: 'app-modal',
+  host: {
+    '(document:keydown.escape)': 'onEscape()',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (open()) {
@@ -39,6 +42,12 @@ export class ModalComponent {
   readonly title = input.required<string>();
   readonly titleId = input('modal-title');
   readonly closed = output<void>();
+
+  protected onEscape(): void {
+    if (this.open()) {
+      this.close();
+    }
+  }
 
   protected close(): void {
     this.closed.emit();
