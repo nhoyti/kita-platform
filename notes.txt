@@ -1,37 +1,5 @@
-Implement the Subscription vertical slice.
+******************
+project name: kita-platform
+supabase db pword: 0jAfl1EH2UVpNdK1
 
-Requirements:
-
-Creator:
-- create subscription plan
-- update plan
-- deactivate plan
-
-Fan:
-- view plans
-- subscribe
-- view subscription
-- cancel subscription
-
-Database:
-
-creator_plans
-subscriptions
-
-Implement:
-
-- constraints
-- indexes
-- RLS
-- authorization
-- subscription status
-
-IMPORTANT:
-
-Do not implement real payment processing yet.
-
-First implement the complete subscription domain and access-control logic using a mock payment provider.
-
-Create a PaymentProvider interface so the real payment provider can be added later.
-
-The frontend must never determine whether a payment succeeded.
+******************
